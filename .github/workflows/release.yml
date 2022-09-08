@@ -23,6 +23,7 @@ jobs:
           cache: 'npm'
 
       - name: build
+        run: npm install
         run: npm run build
       - run: ls dist/
 
