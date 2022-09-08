@@ -1,0 +1,49 @@
+name: Build and release packages
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    # Platforms to build on/for
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+      fail-fast: false
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v3.0.0
+        with:
+          node-version: 16.x
+          cache: 'npm'
+
+      - name: build
+        run: npm run build
+      - run: ls dist/
+
+      - name: Archive Windows .zip file
+        uses: actions/upload-artifact@v2
+        if: startsWith(matrix.os, 'macos')
+        with:
+          name: zap-win-zip
+          path: dist/zap*-win.exe
+      - name: Archive macOS .zip file
+        uses: actions/upload-artifact@v2
+        if: startsWith(matrix.os, 'macos')
+        with:
+          name: zap-mac-zip
+          path: dist/zap*-macos
+      - name: Archive Linux .zip file
+        uses: actions/upload-artifact@v2
+        if: startsWith(matrix.os, 'ubuntu')
+        with:
+          name: zap-linux-zip
+          path: dist/zap*-linux
+
+
+
